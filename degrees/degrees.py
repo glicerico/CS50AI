@@ -91,23 +91,49 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
-    curr_node = Node(source, None, None)
+    path = []
+    source_node = Node(source, None, None)
+    explored = {source_node}
+    explored_states = {source}
 
     frontier = QueueFrontier()
+    frontier.add(source_node)
 
-    # Trivial case, where source and target are the same actor
-    if is_target(curr_node, target):
-        return None
+    # Trivial case, where source and target are the same person
+    if is_target(source_node, target):
+        print("Source and target persons are the same...")
+        exit(1)
 
-    for neighbor in neighbors_for_person(curr_node.state):
-        neighbor_node = Node(neighbor[1], curr_node.state, neighbor[0])
-        if not frontier.contains_state(neighbor_node.state):
-            frontier.add(neighbor_node)
+    while not frontier.empty():
+        current_node = frontier.remove()
+        for neighbor in neighbors_for_person(current_node.state):
+            neighbor_node = Node(neighbor[1], source_node.state, neighbor[0])
+            if is_target(current_node, target):
+                build_path(neighbor_node, explored, source)
+                return path
+            else:
+                if neighbor_node.state not in explored_states:
+                    frontier.add(neighbor_node)
+
+    # If no path found
+    return None
 
 
+def build_path(final_node, explored, source):
+    path = []
+    parent_node = final_node
+    while parent_node.state != source:
+        path.insert(0, (parent_node.action, parent_node.state))
+        parent_node = find_parent(parent_node, explored)
+    return None
 
-    # TODO
-    raise NotImplementedError
+
+def find_parent(node, explored):
+    for n in explored:
+        if node.parent == n.state:
+            explored.remove(n)
+            return n
+    return None
 
 
 def is_target(node, target):
