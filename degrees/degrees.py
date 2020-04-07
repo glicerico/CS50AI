@@ -91,8 +91,20 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
-    init_node = Node(source, None, None)
-    target_node = Node(target, None, None)
+    curr_node = Node(source, None, None)
+
+    frontier = QueueFrontier()
+
+    # Trivial case, where source and target are the same actor
+    if is_target(curr_node, target):
+        return None
+
+    for neighbor in neighbors_for_person(curr_node.state):
+        neighbor_node = Node(neighbor[1], curr_node.state, neighbor[0])
+        if not frontier.contains_state(neighbor_node.state):
+            frontier.add(neighbor_node)
+
+
 
     # TODO
     raise NotImplementedError
