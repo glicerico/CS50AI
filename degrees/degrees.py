@@ -99,16 +99,11 @@ def shortest_path(source, target):
     frontier = QueueFrontier()
     frontier.add(source_node)
 
-    # Trivial case, where source and target are the same person
-    if check_target(source_node, target):
-        print("Source and target persons are the same...")
-        exit(1)
-
     while not frontier.empty():
         current_node = frontier.remove()
         trash = neighbors_for_person(current_node.state)
         for neighbor in neighbors_for_person(current_node.state):
-            neighbor_node = Node(neighbor[1], source_node.state, neighbor[0])
+            neighbor_node = Node(neighbor[1], current_node.state, neighbor[0])
             if check_target(neighbor_node, target):
                 path = build_path(neighbor_node, explored, source)
                 return path
