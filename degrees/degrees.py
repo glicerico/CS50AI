@@ -94,26 +94,29 @@ def shortest_path(source, target):
     path = []
     source_node = Node(source, None, None)
     explored = {source_node}
-    explored_states = {source}
+    explored_stars = {source}
 
     frontier = QueueFrontier()
     frontier.add(source_node)
 
     # Trivial case, where source and target are the same person
-    if is_target(source_node, target):
+    if check_target(source_node, target):
         print("Source and target persons are the same...")
         exit(1)
 
     while not frontier.empty():
         current_node = frontier.remove()
+        trash = neighbors_for_person(current_node.state)
         for neighbor in neighbors_for_person(current_node.state):
             neighbor_node = Node(neighbor[1], source_node.state, neighbor[0])
-            if is_target(current_node, target):
-                build_path(neighbor_node, explored, source)
+            if check_target(neighbor_node, target):
+                path = build_path(neighbor_node, explored, source)
                 return path
             else:
-                if neighbor_node.state not in explored_states:
+                if neighbor_node.state not in explored_stars:
                     frontier.add(neighbor_node)
+                    explored.add(neighbor_node)
+                    explored_stars.add(neighbor[1])
 
     # If no path found
     return None
@@ -125,7 +128,7 @@ def build_path(final_node, explored, source):
     while parent_node.state != source:
         path.insert(0, (parent_node.action, parent_node.state))
         parent_node = find_parent(parent_node, explored)
-    return None
+    return path
 
 
 def find_parent(node, explored):
@@ -136,7 +139,7 @@ def find_parent(node, explored):
     return None
 
 
-def is_target(node, target):
+def check_target(node, target):
     return True if node.state == target else False
 
 
