@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Zip files
+*.zip
+
+# PyCharm files
+.idea/
