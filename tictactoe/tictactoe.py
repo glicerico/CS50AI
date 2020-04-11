@@ -32,14 +32,19 @@ def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board.
     """
-    raise NotImplementedError
+    action_set = set()
+    for i, row in enumerate(board):
+        for j, value in enumerate(row):
+            if value is None:
+                action_set.add((i, j))
+
+    return action_set
 
 
 def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    raise NotImplementedError
 
 
 def winner(board):
