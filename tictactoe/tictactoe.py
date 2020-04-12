@@ -61,7 +61,60 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    raise NotImplementedError
+    if symbol_winner(board, X):
+        return X
+    elif symbol_winner(board, O):
+        return O
+    else:
+        return None
+
+
+def symbol_winner(board, symbol):
+    """
+    Decides if "symbol" has won the game
+    """
+    dim = len(board)
+
+    # Checking rows
+    for i in range(dim):
+        symbol_won = True
+        for j in range(dim):
+            if board[i][j] != symbol:
+                symbol_won = False
+                break
+        if symbol_won:
+            return symbol_won
+
+    # Checking columns
+    for i in range(dim):
+        symbol_won = True
+        for j in range(dim):
+            if board[j][i] != symbol:
+                symbol_won = False
+                break
+        if symbol_won:
+            return symbol_won
+
+    # Checking diagonal
+    symbol_won = True
+    for i in range(dim):
+        if board[i][i] != symbol:
+            symbol_won = False
+            break
+    if symbol_won:
+        return symbol_won
+
+    # Checking other diagonal
+    symbol_won = True
+    for i in range(dim):
+        if board[i][dim - 1 - i] != symbol:
+            symbol_won = False
+            break
+    if symbol_won:
+        return symbol_won
+
+    # If it didn't win in any of the above ways
+    return False
 
 
 def terminal(board):
