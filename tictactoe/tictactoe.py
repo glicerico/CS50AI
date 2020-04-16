@@ -45,11 +45,12 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    new_board = [board[0], board[1], board[2]]  # Instead of importing deep copy library
+    from copy import deepcopy
+    new_board = deepcopy(board)  # Instead of importing deep copy library
 
     x, y = action  # Handy move coordinates
     if board[x][y] is not None:
-        print("board position not empty!")
+        print("Board position not empty!")
         raise ValueError
     else:
         new_board[x][y] = player(board)
