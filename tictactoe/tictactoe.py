@@ -168,7 +168,7 @@ def minimax(board):
     else:
         optimal = min(utilities)
 
-    return possible_actions(utilities.index(optimal()))
+    return possible_actions[utilities.index(optimal())]
 
 
 def optimal_utility(board):
