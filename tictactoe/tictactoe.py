@@ -156,4 +156,38 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    raise NotImplementedError
+    possible_actions = actions(board)
+    utilities = []
+    for action in possible_actions:
+        new_board = result(board, action)
+        utilities.append(optimal_utility(new_board))
+
+    current_player = player(board)
+    if current_player == X:
+        optimal = max(utilities)
+    else:
+        optimal = min(utilities)
+
+    return possible_actions(utilities.index(optimal()))
+
+
+def optimal_utility(board):
+    """
+    Returns the optimal utility for the player whose turn it is to play.
+    """
+    # Break recursion if game is finished
+    if terminal(board):
+        return utility(board)
+
+    utilities = []
+    possible_actions = actions(board)
+    for action in possible_actions:
+        new_board = result(board, action)
+        utilities.append(optimal_utility(new_board))
+
+    next_player = player(board)
+    if next_player == X:
+        return max(utilities)
+    else:
+        return min(utilities)
+
