@@ -157,7 +157,7 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    possible_actions = actions(board)
+    possible_actions = list(actions(board))
     utilities = []
     for action in possible_actions:
         new_board = result(board, action)
@@ -169,7 +169,7 @@ def minimax(board):
     else:
         optimal = min(utilities)
 
-    return possible_actions[utilities.index(optimal())]
+    return possible_actions[utilities.index(optimal)]
 
 
 def optimal_utility(board):
