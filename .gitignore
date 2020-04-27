@@ -133,3 +133,6 @@ dmypy.json
 
 # PyCharm files
 .idea/
+
+# Data
+degrees/large/
