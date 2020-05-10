@@ -55,6 +55,8 @@ knowledge2 = And(
 # B says "A said 'I am a knave'."
 # B says "C is a knave."
 # C says "A is a knight."
+knowledge3_a = And(Implication(AKnight, AKnave), Implication(AKnave, AKnight))
+knowledge3_b = And(Implication(AKnight, AKnight), Implication(AKnave, AKnave))
 knowledge3 = And(
     # Structural info
     Or(AKnight, AKnave),
@@ -64,6 +66,8 @@ knowledge3 = And(
     Or(CKnight, CKnave),
     Not(And(CKnight, CKnave)),
     # Statements
+    Implication(BKnight, knowledge3_a),
+    Implication(BKnave, knowledge3_b),
     Implication(BKnight, CKnave),
     Implication(BKnave, CKnight),
     Implication(CKnight, AKnight),
