@@ -204,12 +204,15 @@ class MinesweeperAI():
         """
         Check if new sentences can be inferred, and add them
         """
+        sentences_to_compare = copy.deepcopy(self.knowledge)
+        inferred_sentences = []
         for sentence_1 in self.knowledge:
-            for sentence_2 in self.knowledge:
-                if len(sentence_1.cells) > len(sentence_2.cells):  # Avoid new inference from equal sets
-                    if sentence_1.cells.issuperset(sentence_2.cells):
-                        self.knowledge.append(Sentence(sentence_1.cells.difference(sentence_2.cells),
+            sentences_to_compare.remove(sentence_1)
+            for sentence_2 in sentences_to_compare:
+                if sentence_1.cells.issuperset(sentence_2.cells):
+                    inferred_sentences.append(Sentence(sentence_1.cells.difference(sentence_2.cells),
                                                        sentence_1.count - sentence_2.count))
+        self.knowledge += inferred_sentences
 
     def mark_determined(self):
         """
