@@ -198,12 +198,18 @@ class MinesweeperAI():
         undetermined_neighbors, count = self.get_undetermined_neighbors(cell, count)
         self.knowledge.append(Sentence(undetermined_neighbors, count))
         self.mark_determined()
+        self.add_inferred_sentences()
 
     def add_inferred_sentences(self):
+        """
+        Check if new sentences can be inferred, and add them
+        """
         for sentence_1 in self.knowledge:
             for sentence_2 in self.knowledge:
-                if len(sentence_1.cells) > len(sentence_2.cells):
-                    return True
+                if len(sentence_1.cells) > len(sentence_2.cells):  # Avoid new inference from equal sets
+                    if sentence_1.cells.issuperset(sentence_2.cells):
+                        self.knowledge.append(Sentence(sentence_1.cells.difference(sentence_2.cells),
+                                                       sentence_1.count - sentence_2.count))
 
     def mark_determined(self):
         """
