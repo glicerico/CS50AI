@@ -1,5 +1,6 @@
 import itertools
 import random
+import copy
 
 
 class Minesweeper():
@@ -106,7 +107,7 @@ class Sentence():
         Returns the set of all cells in self.cells known to be mines.
         """
         if len(self.cells) == self.count:
-            return self.cells
+            return copy.deepcopy(self.cells)
         else:
             return set()
 
@@ -115,7 +116,7 @@ class Sentence():
         Returns the set of all cells in self.cells known to be safe.
         """
         if self.count == 0:
-            return self.cells
+            return copy.deepcopy(self.cells)
         else:
             return set()
 
@@ -191,7 +192,62 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
-        raise NotImplementedError
+        self.moves_made.add(cell)
+        self.mark_safe(cell)
+
+        undetermined_neighbors, count = self.get_undetermined_neighbors(cell, count)
+        self.knowledge.append(Sentence(undetermined_neighbors, count))
+        self.mark_determined()
+
+    def add_inferred_sentences(self):
+        for sentence_1 in self.knowledge:
+            for sentence_2 in self.knowledge:
+                if len(sentence_1.cells) > len(sentence_2.cells):
+                    return True
+
+    def mark_determined(self):
+        """
+        Runs a check on knowledge to infer and mark new mines or safes
+        """
+        new_inferences = False  # Flags if new inferences were made
+        for sentence in self.knowledge:
+            new_mines = sentence.known_mines()
+            for new_mine in new_mines:
+                self.mark_mine(new_mine)
+
+            new_safes = sentence.known_safes()
+            for new_safe in new_safes:
+                self.mark_safe(new_safe)
+
+            if len(new_mines.union(new_safes)) > 0:
+                new_inferences = True
+
+        return new_inferences
+
+    def get_undetermined_neighbors(self, cell, count):
+        """
+        Returns neighbors which are not mines nor safe, and an updated mine count
+        """
+        neighbors = set()
+        # Loop over all cells within one row and column
+        for i in range(cell[0] - 1, cell[0] + 2):
+            for j in range(cell[1] - 1, cell[1] + 2):
+
+                # Ignore the cell itself
+                if (i, j) == cell:
+                    continue
+
+                # Declare neighbor if cell is in bounds
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    curr_cell = (i, j)
+                    if curr_cell in self.mines:  # Eliminate known mines, update count
+                        count -= 1
+                    elif curr_cell in self.safes:  # Eliminate known safes
+                        pass
+                    else:
+                        neighbors.add(curr_cell)
+
+        return neighbors, count
 
     def make_safe_move(self):
         """
@@ -221,4 +277,4 @@ class MinesweeperAI():
         if len(available_cells) == 0:
             return None
         else:
-            return random.sample(available_cells, 1)
+            return random.sample(available_cells, 1)[0]
