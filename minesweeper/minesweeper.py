@@ -196,8 +196,10 @@ class MinesweeperAI():
         self.mark_safe(cell)
 
         undetermined_neighbors, count = self.get_undetermined_neighbors(cell, count)
-        self.knowledge.append(Sentence(undetermined_neighbors, count))
+        if len(undetermined_neighbors) > 0:
+            self.knowledge.append(Sentence(undetermined_neighbors, count))
         self.mark_determined()
+        self.knowledge = [sent for sent in self.knowledge if len(sent.cells) > 0]  # Remove empty sentences
         self.add_inferred_sentences()
 
     def add_inferred_sentences(self):
