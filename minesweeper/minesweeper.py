@@ -209,9 +209,14 @@ class MinesweeperAI():
         for sentence_1 in self.knowledge:
             sentences_to_compare.remove(sentence_1)
             for sentence_2 in sentences_to_compare:
-                if sentence_1.cells.issuperset(sentence_2.cells):
-                    inferred_sentences.append(Sentence(sentence_1.cells.difference(sentence_2.cells),
-                                                       sentence_1.count - sentence_2.count))
+                if len(sentence_1.cells) > len(sentence_2.cells):
+                    if sentence_1.cells.issuperset(sentence_2.cells):
+                        inferred_sentences.append(Sentence(sentence_1.cells.difference(sentence_2.cells),
+                                                           sentence_1.count - sentence_2.count))
+                elif len(sentence_1.cells) < len(sentence_2.cells):
+                    if sentence_1.cells.issubset(sentence_2.cells):
+                        inferred_sentences.append(Sentence(sentence_2.cells.difference(sentence_1.cells),
+                                                           sentence_2.count - sentence_1.count))
         self.knowledge += inferred_sentences
 
     def mark_determined(self):
