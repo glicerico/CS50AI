@@ -2,6 +2,7 @@ import os
 import random
 import re
 import sys
+import numpy as np
 
 DAMPING = 0.85
 SAMPLES = 10000
@@ -102,8 +103,30 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    # raise NotImplementedError
-    return None
+    N = len(corpus)
+    PR = {page: 1 / N for page in corpus}  # Initialize scores
+
+    refs = get_references(corpus)
+
+    for _ in range(10000):
+        for page in corpus:
+            this_sum = 0
+            for ref in refs[page]:
+                this_sum += PR[ref] / len(corpus[ref])
+            PR[page] = (1 - damping_factor) / N + damping_factor * this_sum
+    return PR
+
+
+def get_references(corpus):
+    """
+    Return dictionary with pages that link to a given page
+    """
+    refs = {page: [] for page in corpus}
+    for page, links in corpus.items():
+        for link in links:
+            refs[link].append(page)
+
+    return refs
 
 
 if __name__ == "__main__":
