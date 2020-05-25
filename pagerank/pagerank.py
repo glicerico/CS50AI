@@ -82,11 +82,11 @@ def sample_pagerank(corpus, damping_factor, n):
     pagerank = {ipage: 0 for ipage in corpus}  # Initialize counter for each page
     curr_page = random.sample(corpus.keys(), 1)[0]  # Initial page
 
-    pages = sorted(list(corpus.keys()))
+    pages = sorted(list(corpus.keys()))  # Get ordered list of keys
 
     for _ in range(n):
         distribution = transition_model(corpus, curr_page, damping_factor)
-        weights = [distribution[page] for page in pages]
+        weights = [distribution[page] for page in pages]  # Get ordered list of weights
         curr_page = random.choices(population=pages, weights=weights)[0]
         pagerank[curr_page] += 1 / n  # Normalize continuously
 
