@@ -63,7 +63,9 @@ def transition_model(corpus, page, damping_factor):
     else:
         linked_prob = 1 / len(corpus[page])
         distribution = {ipage: damping_prob * (1 - damping_factor) for ipage in corpus}
-        distribution = {ipage: distribution[ipage] + damping_factor * linked_prob for ipage in corpus[page]}
+        for ipage in corpus[page]:  # Add links probabilities
+            distribution[ipage] += damping_factor * linked_prob
+
 
     return distribution
 
@@ -77,7 +79,18 @@ def sample_pagerank(corpus, damping_factor, n):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    pagerank = {ipage: 0 for ipage in corpus}  # Initialize counter for each page
+    curr_page = random.sample(corpus.keys(), 1)[0]  # Initial page
+
+    pages = sorted(list(corpus.keys()))
+
+    for _ in range(n):
+        distribution = transition_model(corpus, curr_page, damping_factor)
+        weights = [distribution[page] for page in pages]
+        curr_page = random.choices(population=pages, weights=weights)[0]
+        pagerank[curr_page] += 1 / n  # Normalize continuously
+
+    return pagerank
 
 
 def iterate_pagerank(corpus, damping_factor):
@@ -89,7 +102,8 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    # raise NotImplementedError
+    return None
 
 
 if __name__ == "__main__":
