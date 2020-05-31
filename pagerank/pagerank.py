@@ -14,18 +14,11 @@ def main():
     corpus = crawl(sys.argv[1])
     ranks = sample_pagerank(corpus, DAMPING, SAMPLES)
     print(f"PageRank Results from Sampling (n = {SAMPLES})")
-    sum = 0
     for page in sorted(ranks):
         print(f"  {page}: {ranks[page]:.4f}")
-        sum += ranks[page]
-    print(f"SUM: {sum}")
     ranks = iterate_pagerank(corpus, DAMPING)
     print(f"PageRank Results from Iteration")
-    sum = 0
     for page in sorted(ranks):
-        print(f"  {page}: {ranks[page]:.4f}")
-        sum += ranks[page]
-    print(f"SUM: {sum}")
 
 
 def crawl(directory):
@@ -109,8 +102,14 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    convergence = 0.001
+    convergence = 0.0001
     n = len(corpus)
+
+    # Handle pages with no links
+    for page, links in corpus.items():
+        if len(links) == 0:
+            corpus[page] = list(corpus.keys())
+
     pagerank = {page: 1 / n for page in corpus}  # Initialize scores
     refs = get_references(corpus)
 
