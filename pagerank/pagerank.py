@@ -103,8 +103,14 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    convergence = 0.001
+    convergence = 0.0001
     n = len(corpus)
+
+    # Handle pages with no links
+    for page, links in corpus.items():
+        if len(links) == 0:
+            corpus[page] = list(corpus.keys())
+
     pagerank = {page: 1 / n for page in corpus}  # Initialize scores
     refs = get_references(corpus)
 
@@ -116,11 +122,11 @@ def iterate_pagerank(corpus, damping_factor):
                 this_sum += pagerank[ref] / len(corpus[ref])
             pagerank[page] = (1 - damping_factor) / n + damping_factor * this_sum
 
-        new_scores = list(pagerank.values())
+        new_scores = np.array(list(pagerank.values()))
         if (abs((scores - new_scores)/scores) < convergence).all():
             return pagerank
         else:
-            scores = np.array(new_scores)
+            scores = new_scores
 
 
 def get_references(corpus):
