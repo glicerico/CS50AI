@@ -38,7 +38,6 @@ PROBS = {
 
 
 def main():
-
     # Check for proper usage
     if len(sys.argv) != 2:
         sys.exit("Usage: python heredity.py data.csv")
@@ -76,7 +75,6 @@ def main():
         # Loop over all sets of people who might have the gene
         for one_gene in powerset(names):
             for two_genes in powerset(names - one_gene):
-
                 # Update probabilities with new joint probability
                 p = joint_probability(people, one_gene, two_genes, have_trait)
                 update(probabilities, one_gene, two_genes, have_trait, p)
@@ -139,7 +137,52 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
-    raise NotImplementedError
+    joint_p = 1
+    # zero_genes = set(people.keys()) - two_genes - one_gene
+    for person in people:
+
+        # Calculate probability to have the genes of interest
+        this_genes = get_nbr_genes(person, one_gene, two_genes)
+        if people[person]['mother'] is None:  # Assumes both parents info, or nothing
+            gene_prob = PROBS['gene'][this_genes]
+        else:  # If there is parent's info
+            prob_mother = get_parent_prob(people[person]['mother'], one_gene, two_genes)
+            prob_father = get_parent_prob(people[person]['father'], one_gene, two_genes)
+
+            if this_genes == 0:
+                gene_prob = (1 - prob_mother) * (1 - prob_father)  # None can transmit
+            elif this_genes == 1:
+                gene_prob = (1 - prob_mother) * prob_father + prob_mother * (1 - prob_father)  # Two possibilities
+            else:
+                gene_prob = prob_father * prob_mother  # Both need to transmit
+
+        # Calculate probability to have trait, given genes of interest
+        trait = True if person in have_trait else False  # Trait for this person
+        trait_prob = PROBS['trait'][this_genes][trait]
+
+        joint_p *= gene_prob * trait_prob  # Accumulates joint probability of all people
+
+    return joint_p
+
+
+def get_nbr_genes(person, one_gene, two_genes):
+    """
+    Return number of genes for person
+    """
+    return (2 if person in two_genes
+                 else 1 if person in one_gene
+                        else 0)
+
+
+def get_parent_prob(parent, one_gene, two_genes):
+    """
+    Return probability that parent transmits the gene
+    """
+    nbr_genes = get_nbr_genes(parent, one_gene, two_genes)  # Number of genes for parent
+
+    return (0.01 if nbr_genes == 0
+            else 0.5 if nbr_genes == 1
+                     else 0.99)
 
 
 def update(probabilities, one_gene, two_genes, have_trait, p):
