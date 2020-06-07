@@ -157,12 +157,16 @@ def joint_probability(people, one_gene, two_genes, have_trait):
                 gene_prob = prob_father * prob_mother  # Both need to transmit
 
         # Calculate probability to have trait, given genes of interest
-        trait = True if person in have_trait else False  # Trait for this person
+        trait = get_trait(person, have_trait)  # Trait for this person
         trait_prob = PROBS['trait'][this_genes][trait]
 
         joint_p *= gene_prob * trait_prob  # Accumulates joint probability of all people
 
     return joint_p
+
+
+def get_trait(person, have_trait):
+    return True if person in have_trait else False
 
 
 def get_nbr_genes(person, one_gene, two_genes):
@@ -192,7 +196,12 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
     Which value for each distribution is updated depends on whether
     the person is in `have_gene` and `have_trait`, respectively.
     """
-    raise NotImplementedError
+    for person in probabilities:
+        nbr_genes = get_nbr_genes(person, one_gene, two_genes)
+        probabilities[person]['gene'][nbr_genes] += p
+
+        trait = get_trait(person, have_trait)
+        probabilities[person]['trait'][trait] += p
 
 
 def normalize(probabilities):
