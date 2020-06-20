@@ -1,6 +1,8 @@
 import csv
 import sys
 
+import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -59,7 +61,17 @@ def load_data(filename):
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
+    df = pd.read_csv(filename, dtype={"Weekend": int, "Revenue": int})
+
+    # Map strings to integers
+    df["VisitorType"] = df["VisitorType"].map(lambda x: 0 if x == "New_Visitor" else 1)
+    months = {'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'June': 5,
+              'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11}
+    df["Month"] = df["Month"].map(lambda x: months[x])
+
+    labels = df.pop("Revenue").tolist()
+    evidence = df.to_numpy().tolist()  # TODO: Make sure data type doesnt change
+    return evidence, labels
 
 
 def train_model(evidence, labels):
@@ -67,8 +79,7 @@ def train_model(evidence, labels):
     Given a list of evidence lists and a list of labels, return a
     fitted k-nearest neighbor model (k=1) trained on the data.
     """
-    raise NotImplementedError
-
+    return NotImplementedError
 
 def evaluate(labels, predictions):
     """
@@ -85,8 +96,7 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
-    raise NotImplementedError
-
+    return NotImplementedError
 
 if __name__ == "__main__":
     main()
