@@ -147,8 +147,7 @@ class CrosswordCreator():
         """
         # Find all arcs for initial queue
         if arcs is None:
-            arcs = [(x, y) for x, y in combinations(self.crossword.variables)
-                    if self.crossword.overlaps[x, y] is not None]
+            arcs = [(x, y) for x in self.crossword.variables for y in self.crossword.neighbors(x)]
 
         queue = arcs
 
