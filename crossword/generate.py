@@ -182,11 +182,12 @@ class CrosswordCreator():
             if len(answer) != var.length:  # Check length match
                 return False
             for neighbor in self.crossword.neighbors(var):
-                overlap = self.crossword.overlaps[var, neighbor]
-                if overlap is not None:
-                    # Check that overlaps are correct
-                    if assignment[var][overlap[0]] != assignment[neighbor][overlap[1]]:
-                        return False
+                if neighbor in assignment.keys():  # Only check neighbors that have been assigned
+                    overlap = self.crossword.overlaps[var, neighbor]
+                    if overlap is not None:
+                        # Check that overlaps are correct
+                        if assignment[var][overlap[0]] != assignment[neighbor][overlap[1]]:
+                            return False
 
         return True
 
