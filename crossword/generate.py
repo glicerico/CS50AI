@@ -3,7 +3,6 @@ import sys
 from crossword import *
 from itertools import combinations
 
-
 class CrosswordCreator():
 
     def __init__(self, crossword):
@@ -220,7 +219,19 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        raise NotImplementedError
+        if self.assignment_complete(assignment):
+            return assignment  # Already finished
+
+        var = self.select_unassigned_variable(assignment)
+        for value in self.order_domain_values(var, assignment):
+            test_assignment = assignment.copy()
+            test_assignment[var] = value
+            if self.consistent(test_assignment):
+                result = self.backtrack(test_assignment)
+                if result is not None:
+                    return result
+
+        return None
 
 
 def main():
