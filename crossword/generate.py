@@ -180,17 +180,15 @@ class CrosswordCreator():
         if len(assignment.values()) != len(set(assignment.values())):  # Check all answers are unique
             return False
 
-        assigned_vars = set(assignment.keys())
         for var, answer in assignment.items():
             if len(answer) != var.length:  # Check length match
                 return False
-            assigned_vars.remove(var)
-            for neighbor in assigned_vars:
-                crossings = self.crossword.overlaps[var, neighbor]
-                if crossings is not None:
-                    for crossing in crossings:  # Check that overlaps are correct
-                        if assignment[var][crossing[0]] != assignment[neighbor][crossing[1]]:
-                            return False
+            for neighbor in self.crossword.neighbors(var):
+                crossing = self.crossword.overlaps[var, neighbor]
+                if crossing is not None:
+                    # Check that overlaps are correct
+                    if assignment[var][crossing[0]] != assignment[neighbor][crossing[1]]:
+                        return False
 
         return True
 
