@@ -222,7 +222,16 @@ class CrosswordCreator():
         return values.
         """
         remaining = set(self.crossword.variables) - set(assignment.keys())
-        return remaining.pop()
+        min_remaining_count = min(self.get_domain_length(var) for var in remaining)  # Get smallest domain size
+        # Only keep vars with smallest domain size
+        ordered_remaining = [var for var in remaining if self.get_domain_length(var) == min_remaining_count]
+        if len(ordered_remaining) > 1:  # If tied, sort by degree
+            ordered_remaining = sorted(ordered_remaining, key=lambda x: len(self.crossword.neighbors(x)))
+
+        return ordered_remaining[-1]  # Return highest degree
+
+    def get_domain_length(self, x):
+        return len(self.domains[x])
 
     def backtrack(self, assignment):
         """
