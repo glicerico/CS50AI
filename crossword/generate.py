@@ -127,10 +127,13 @@ class CrosswordCreator():
         """
         overlap = self.crossword.overlaps[x, y]
         if overlap is not None:
+            start_size = len(self.domains[x])
             # Get possible matching letters from word y's domain. This avoids nested loop.
             matches = [word_y[overlap[1]] for word_y in self.domains[y]]
             # Rewrite x's domain only with matching words.
             self.domains[x] = [word_x for word_x in self.domains[x] if word_x[overlap[0]] in matches]
+
+        return False if start_size == len(self.domains[x]) else True
 
 
     def ac3(self, arcs=None):
