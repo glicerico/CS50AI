@@ -1,6 +1,7 @@
 import sys
 
 from crossword import *
+from itertools import combinations
 
 
 class CrosswordCreator():
@@ -135,7 +136,6 @@ class CrosswordCreator():
 
         return False if start_size == len(self.domains[x]) else True
 
-
     def ac3(self, arcs=None):
         """
         Update `self.domains` such that each variable is arc consistent.
@@ -145,7 +145,16 @@ class CrosswordCreator():
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
-        raise NotImplementedError
+        if arcs is None:
+            queue = [(x, y) for x, y in combinations(self.crossword.variables) if self.crossword.overlaps[x, y] is not None]
+        else:
+            queue = arcs
+
+        for arc in queue:
+            if self.revise(*arc):
+                queue.append(STHSTH)
+
+        return True
 
     def assignment_complete(self, assignment):
         """
