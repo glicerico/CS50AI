@@ -99,7 +99,22 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
-        raise NotImplementedError
+        words_by_length = self.organize_words()
+        for var in self.domains.keys():
+            # Simply assign domains as all words with same length
+            self.domains[var] = words_by_length[var.length - 1]
+        return False
+
+    def organize_words(self):
+        """
+        Organize words by their length, to quickly enforce node consistency
+        """
+        max_size = max(self.crossword.width, self.crossword.height)
+        words_by_length = [[] for i in range(max_size)]  # Init array
+        for word in self.crossword.words:
+            words_by_length[len(word) - 1].append(word)
+
+        return words_by_length
 
     def revise(self, x, y):
         """
