@@ -145,14 +145,20 @@ class CrosswordCreator():
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
+        # Find all arcs for initial queue
         if arcs is None:
-            queue = [(x, y) for x, y in combinations(self.crossword.variables) if self.crossword.overlaps[x, y] is not None]
-        else:
-            queue = arcs
+            arcs = [(x, y) for x, y in combinations(self.crossword.variables)
+                    if self.crossword.overlaps[x, y] is not None]
 
-        for arc in queue:
-            if self.revise(*arc):
-                queue.append(STHSTH)
+        queue = arcs
+
+        while len(queue) > 0:
+            arc = queue.pop(0)
+            if self.revise(*arc):  # Check if revision was made
+                if not self.domains[arc[0]]:  # Check if domain for modified var is empty
+                    return False
+                # Add relevant arcs to queue if revision happened
+                queue.extend([this_arc for this_arc in arcs if (arc[0] in this_arc) and (this_arc != arc)])
 
         return True
 
