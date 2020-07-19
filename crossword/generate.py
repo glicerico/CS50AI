@@ -126,9 +126,9 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
+        start_size = len(self.domains[x])
         overlap = self.crossword.overlaps[x, y]
         if overlap is not None:
-            start_size = len(self.domains[x])
             # Get possible matching letters from word y's domain. This avoids nested loop.
             matches = [word_y[overlap[1]] for word_y in self.domains[y]]
             # Rewrite x's domain only with matching words.
@@ -183,10 +183,10 @@ class CrosswordCreator():
             if len(answer) != var.length:  # Check length match
                 return False
             for neighbor in self.crossword.neighbors(var):
-                crossing = self.crossword.overlaps[var, neighbor]
-                if crossing is not None:
+                overlap = self.crossword.overlaps[var, neighbor]
+                if overlap is not None:
                     # Check that overlaps are correct
-                    if assignment[var][crossing[0]] != assignment[neighbor][crossing[1]]:
+                    if assignment[var][overlap[0]] != assignment[neighbor][overlap[1]]:
                         return False
 
         return True
