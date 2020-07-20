@@ -112,7 +112,8 @@ class CrosswordCreator():
         max_size = max(self.crossword.width, self.crossword.height)
         words_by_length = [[] for i in range(max_size)]  # Init array
         for word in self.crossword.words:
-            words_by_length[len(word) - 1].append(word)
+            if len(word) <= max_size:  # Ignore words longer than crossword size
+                words_by_length[len(word) - 1].append(word)
 
         return words_by_length
 
