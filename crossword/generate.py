@@ -1,7 +1,7 @@
 import sys
 
 from crossword import *
-from itertools import combinations
+
 
 class CrosswordCreator():
 
@@ -199,7 +199,19 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        return self.domains[var]  # Implementation with no heuristic
+        neighbors = self.crossword.neighbors(var)
+        counts = {word: 0 for word in self.domains[var]}  # Initialize count of ruled-out words
+
+        for value in self.domains[var]:
+            for neighbor in neighbors:
+                if neighbor not in assignment.keys():  # Ignore vars that are already assigned
+                    overlap = self.crossword.overlaps[var, neighbor]
+                    for n_value in self.domains[neighbor]:
+                        # Ignore values already assigned
+                        if n_value not in assignment.values() and value[overlap[0]] == n_value[overlap[1]]:
+                            counts[value] += 1  # Restrains one more
+
+        return sorted(self.domains[var], key=lambda value: counts[value])  # Sort using counts
 
     def select_unassigned_variable(self, assignment):
         """
