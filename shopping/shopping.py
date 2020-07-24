@@ -102,14 +102,12 @@ def evaluate(labels, predictions):
     labels_array = np.array(labels)
     preds_array = np.array(predictions)
 
-    labels_array = np.array([1,1,1,0,0,0,0,0])
-    preds_array = np.array([1,1,0,0,0,0,0,0])
     true_pos = sum(labels_array)
     correct_pos = sum(labels_array * preds_array)
     sensitivity = correct_pos / true_pos
 
     true_neg = len(labels_array) - true_pos
-    incorrect_neg = true_neg - np.count_nonzero(labels_array + preds_array)
+    incorrect_neg = len(labels_array) - np.count_nonzero(labels_array + preds_array)
     specificity = incorrect_neg / true_neg
 
     return sensitivity, specificity
