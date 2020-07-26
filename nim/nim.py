@@ -102,7 +102,7 @@ class NimAI():
         If no Q-value exists yet in `self.q`, return 0.
         """
         key = self.generate_dict_key(state, action)
-        return self.q.get(key, default=0)  # Return 0 if key doesn't exist
+        return self.q.get(key, 0)  # Return 0 if key doesn't exist
 
     def update_q_value(self, state, action, old_q, reward, future_rewards):
         """
@@ -122,7 +122,7 @@ class NimAI():
         old_value_estimate = self.get_q_value(state, action)
         new_value_estimate = reward + future_rewards
         key = self.generate_dict_key(state, action)
-        self.q = old_value_estimate + self.alpha * (new_value_estimate - old_value_estimate)
+        self.q[key] = old_value_estimate + self.alpha * (new_value_estimate - old_value_estimate)
 
     @ staticmethod
     def generate_dict_key(state, action):
@@ -135,8 +135,10 @@ class NimAI():
         and the maximum of all of their Q-values.
         """
         max_reward = 0
+        possible_actions = list(Nim.available_actions(state))
         best_action = None
-        possible_actions = Nim.available_actions(state)
+        if len(possible_actions) > 0:
+            best_action = possible_actions[0]
         for action in possible_actions:
             curr_val = self.get_q_value(state, action)
             if curr_val > max_reward:
@@ -173,14 +175,14 @@ class NimAI():
         If multiple actions have the same Q-value, any of those
         options is an acceptable return value.
         """
-        possible_actions = Nim.available_actions(state)
+        possible_actions = list(Nim.available_actions(state))
 
         if epsilon:
             if random.random() < self.epsilon:  # Condition to return random value
                 return random.choice(possible_actions)
 
         # If conditions for random value didn't happen, return best value
-        best_action, _ = self.get_best_action()
+        best_action, _ = self.get_best_action(state)
         return best_action
 
 
