@@ -122,6 +122,7 @@ class NimAI():
         old_value_estimate = self.get_q_value(state, action)
         new_value_estimate = reward + future_rewards
         key = self.generate_dict_key(state, action)
+        self.q = old_value_estimate + self.alpha * (new_value_estimate - old_value_estimate)
 
     @ staticmethod
     def generate_dict_key(state, action):
