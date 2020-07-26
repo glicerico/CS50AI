@@ -128,6 +128,23 @@ class NimAI():
     def generate_dict_key(state, action):
         return tuple(state), action
 
+    def get_best_action(self, state):
+        """
+        Given a state `state`, consider all possible `(state, action)`
+        pairs available in that state and return both the best action
+        and the maximum of all of their Q-values.
+        """
+        max_reward = 0
+        best_action = None
+        possible_actions = Nim.available_actions(state)
+        for action in possible_actions:
+            curr_val = self.get_q_value(state, action)
+            if curr_val > max_reward:
+                best_action = action
+                max_reward = curr_val
+
+        return best_action, max_reward
+
     def best_future_reward(self, state):
         """
         Given a state `state`, consider all possible `(state, action)`
@@ -138,13 +155,7 @@ class NimAI():
         Q-value in `self.q`. If there are no available actions in
         `state`, return 0.
         """
-        max_reward = 0
-        possible_actions = Nim.available_actions(state)
-        for action in possible_actions:
-            curr_val = self.get_q_value(state, action)
-            if curr_val > max_reward:
-                max_reward = curr_val
-
+        _, max_reward = self.get_best_action(state)
         return max_reward
 
     def choose_action(self, state, epsilon=True):
@@ -162,7 +173,15 @@ class NimAI():
         If multiple actions have the same Q-value, any of those
         options is an acceptable return value.
         """
-        raise NotImplementedError
+        possible_actions = Nim.available_actions(state)
+
+        if epsilon:
+            if random.random() < self.epsilon:  # Condition to return random value
+                return random.choice(possible_actions)
+
+        # If conditions for random value didn't happen, return best value
+        best_action, _ = self.get_best_action()
+        return best_action
 
 
 def train(n):
