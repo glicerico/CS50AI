@@ -101,7 +101,8 @@ class NimAI():
         Return the Q-value for the state `state` and the action `action`.
         If no Q-value exists yet in `self.q`, return 0.
         """
-        raise NotImplementedError
+        key = (tuple(state), action)
+        return self.q.get(key, default=0)  # Return 0 if key doesn't exist
 
     def update_q_value(self, state, action, old_q, reward, future_rewards):
         """
