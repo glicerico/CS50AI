@@ -74,6 +74,7 @@ def load_data(data_dir):
 
     return images, labels
 
+
 def get_model():
     """
     Returns a compiled convolutional neural network model. Assume that the
