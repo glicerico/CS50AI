@@ -81,7 +81,41 @@ def get_model():
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
-    raise NotImplementedError
+    num_filters = 32
+    dropout_rate = 0
+    filter_x = 3
+    filter_y = 3
+    pool_x = 2
+    pool_y = 2
+
+    model = tf.keras.models.Sequential([
+
+        # Convolutional layer. Learn num_filters using the specified-size kernel
+        tf.keras.layers.Conv2D(
+            num_filters, (filter_x, filter_y), activation="relu", input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)
+        ),
+
+        # Max-pooling layer, using 2x2 pool size
+        tf.keras.layers.MaxPooling2D(pool_size=(pool_x, pool_y)),
+
+        # Flatten units
+        tf.keras.layers.Flatten(),
+
+        # Add a hidden layer with dropout
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dropout(dropout_rate),
+
+        # Add an output layer with output units for all sign categories
+        tf.keras.layers.Dense(NUM_CATEGORIES, activation="softmax")
+    ])
+
+    model.compile(
+        optimizer="adam",
+        loss="categorical_crossentropy",
+        metrics=["accuracy"]
+    )
+
+    return model
 
 
 if __name__ == "__main__":
