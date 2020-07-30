@@ -4,6 +4,7 @@ import os
 import sys
 import tensorflow as tf
 
+
 from sklearn.model_selection import train_test_split
 
 EPOCHS = 10
@@ -23,7 +24,7 @@ def main():
     images, labels = load_data(sys.argv[1])
 
     # Split data into training and testing sets
-    labels = tf.keras.utils.to_categorical(labels)
+    # labels = tf.keras.utils.to_categorical(labels)
     x_train, x_test, y_train, y_test = train_test_split(
         np.array(images), np.array(labels), test_size=TEST_SIZE
     )
@@ -106,12 +107,13 @@ def get_model():
         tf.keras.layers.Dropout(dropout_rate),
 
         # Add an output layer with output units for all sign categories
-        tf.keras.layers.Dense(NUM_CATEGORIES, activation="softmax")
+        tf.keras.layers.Dense(NUM_CATEGORIES)
     ])
 
     model.compile(
         optimizer="adam",
-        loss="categorical_crossentropy",
+        # loss="categorical_crossentropy",
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=["accuracy"]
     )
 
