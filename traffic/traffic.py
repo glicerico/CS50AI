@@ -3,7 +3,7 @@ import numpy as np
 import os
 import sys
 import tensorflow as tf
-
+import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split
 
@@ -72,8 +72,20 @@ def load_data(data_dir):
                 # Append label and image to lists
                 labels.append(int(directory))
                 images.append(img)
-
+    display_pics(images)
     return images, labels
+
+
+def display_pics(train_images):
+    plt.figure(figsize=(10,10))
+    for i in range(25):
+        plt.subplot(5,5,i+1)
+        plt.xticks([])
+        plt.yticks([])
+        plt.grid(False)
+        plt.imshow(train_images[i], cmap=plt.cm.binary)
+        plt.xlabel('nada')
+    plt.show()
 
 
 def get_model():
