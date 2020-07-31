@@ -4,7 +4,6 @@ import os
 import sys
 import tensorflow as tf
 import matplotlib.pyplot as plt
-import random as rand
 
 from sklearn.model_selection import train_test_split
 
@@ -138,33 +137,39 @@ def get_model():
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
-    num_filters = 32
+    num_conv = 1
+    num_filters = [32]
+    filter_dims = [(3, 3)]
     dropout_rate = 0
-    filter_x = 3
-    filter_y = 3
-    pool_x = 2
-    pool_y = 2
+    num_pooling = 1
+    pool_dims = [(2, 2)]
+    num_hidden = 1
+    hidden_dims = [128]
 
-    model = tf.keras.models.Sequential([
+    model = tf.keras.models.Sequential()
 
-        # Convolutional layer. Learn num_filters using the specified-size kernel
-        tf.keras.layers.Conv2D(
-            num_filters, (filter_x, filter_y), activation="relu", input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)
-        ),
+    # Add convolutional layers with num_filters using the specified-size kernel
+    for i in range(num_conv):
+        model.add(tf.keras.layers.Conv2D(
+            num_filters[i], (filter_dims[i][0], filter_dims[i][1]), activation="relu",
+            input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)
+        ))
 
-        # Max-pooling layer, using 2x2 pool size
-        tf.keras.layers.MaxPooling2D(pool_size=(pool_x, pool_y)),
+    for i in range(num_pooling):
+        # Add max-pooling layers, using custom pool sizes
+        model.add(tf.keras.layers.MaxPooling2D(pool_size=(pool_dims[i][0], pool_dims[i][1])))
 
-        # Flatten units
-        tf.keras.layers.Flatten(),
+    # Flatten units
+    model.add(tf.keras.layers.Flatten())
 
-        # Add a hidden layer with dropout
-        tf.keras.layers.Dense(128, activation="relu"),
-        tf.keras.layers.Dropout(dropout_rate),
+    # Add hidden layers with dropout
+    for i in range(num_hidden):
+        model.add(tf.keras.layers.Dense(hidden_dims[i], activation="relu"))
 
-        # Add an output layer with output units for all sign categories
-        tf.keras.layers.Dense(NUM_CATEGORIES)
-    ])
+    model.add(tf.keras.layers.Dropout(dropout_rate))
+
+    # Add an output layer with output units for all sign categories
+    model.add(tf.keras.layers.Dense(NUM_CATEGORIES))
 
     model.compile(
         optimizer="adam",
