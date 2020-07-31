@@ -37,6 +37,7 @@ def main():
     # Evaluate neural network performance
     model.evaluate(x_test, y_test, verbose=2)
 
+    ## REMOVE!!
     check_predictions(model, x_test, y_test)
 
     # Save model to file
@@ -49,10 +50,6 @@ def main():
 def check_predictions(model, x_test, y_test):
     prob_model = tf.keras.Sequential([model, tf.keras.layers.Softmax()])
     preds = prob_model.predict(x_test)
-    print("First image prediction")
-    print(np.argmax(preds[0]), preds[0])
-    print("First image label")
-    print(y_test[0])
     plot_predictions(preds, x_test, y_test)
 
 
@@ -62,7 +59,7 @@ def plot_image(i, predictions_array, true_label, img):
     plt.xticks([])
     plt.yticks([])
 
-    plt.imshow(img, cmap=plt.cm.binary)
+    plt.imshow(img)
 
     predicted_label = np.argmax(predictions_array)
     if predicted_label == true_label:
@@ -132,21 +129,7 @@ def load_data(data_dir):
                 # Append label and image to lists
                 labels.append(int(directory))
                 images.append(img)
-    display_pics(images, labels)
     return images, labels
-
-
-def display_pics(images, labels):
-    plt.figure(figsize=(10, 10))
-    for i in range(25):
-        plt.subplot(5, 5, i + 1)
-        plt.xticks([])
-        plt.yticks([])
-        plt.grid(False)
-        img_id = rand.randint(0, len(images))
-        plt.imshow(images[img_id])
-        plt.xlabel(labels[img_id])
-    plt.show()
 
 
 def get_model():
@@ -185,7 +168,6 @@ def get_model():
 
     model.compile(
         optimizer="adam",
-        # loss="categorical_crossentropy",
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=["accuracy"]
     )
