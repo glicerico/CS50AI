@@ -16,7 +16,6 @@ TEST_SIZE = 0.4
 
 
 def main():
-
     # Check command-line arguments
     if len(sys.argv) not in [2, 3]:
         sys.exit("Usage: python traffic.py data_directory [model.h5]")
@@ -25,7 +24,6 @@ def main():
     images, labels = load_data(sys.argv[1])
 
     # Split data into training and testing sets
-    # labels = tf.keras.utils.to_categorical(labels)
     x_train, x_test, y_train, y_test = train_test_split(
         np.array(images), np.array(labels), test_size=TEST_SIZE
     )
@@ -37,13 +35,74 @@ def main():
     model.fit(x_train, y_train, epochs=EPOCHS)
 
     # Evaluate neural network performance
-    model.evaluate(x_test,  y_test, verbose=2)
+    model.evaluate(x_test, y_test, verbose=2)
+
+    check_predictions(model, x_test, y_test)
 
     # Save model to file
     if len(sys.argv) == 3:
         filename = sys.argv[2]
         model.save(filename)
         print(f"Model saved to {filename}.")
+
+
+def check_predictions(model, x_test, y_test):
+    prob_model = tf.keras.Sequential([model, tf.keras.layers.Softmax()])
+    preds = prob_model.predict(x_test)
+    print("First image prediction")
+    print(np.argmax(preds[0]), preds[0])
+    print("First image label")
+    print(y_test[0])
+    plot_predictions(preds, x_test, y_test)
+
+
+def plot_image(i, predictions_array, true_label, img):
+    predictions_array, true_label, img = predictions_array, true_label[i], img[i]
+    plt.grid(False)
+    plt.xticks([])
+    plt.yticks([])
+
+    plt.imshow(img, cmap=plt.cm.binary)
+
+    predicted_label = np.argmax(predictions_array)
+    if predicted_label == true_label:
+        color = 'blue'
+    else:
+        color = 'red'
+
+    plt.xlabel("{} {:2.0f}% ({})".format(predicted_label,
+                                         100 * np.max(predictions_array),
+                                         true_label),
+               color=color)
+
+
+def plot_value_array(i, predictions_array, true_label):
+    true_label = true_label[i]
+    plt.grid(False)
+    plt.xticks(range(NUM_CATEGORIES))
+    plt.yticks([])
+    thisplot = plt.bar(range(NUM_CATEGORIES), predictions_array, color="#777777")
+    plt.ylim([0, 1])
+    predicted_label = np.argmax(predictions_array)
+
+    thisplot[predicted_label].set_color('red')
+    thisplot[true_label].set_color('blue')
+
+
+def plot_predictions(predictions, test_images, test_labels):
+    # Plot the first X test images, their predicted labels, and the true labels.
+    # Color correct predictions in blue and incorrect predictions in red.
+    num_rows = 5
+    num_cols = 3
+    num_images = num_rows * num_cols
+    plt.figure(figsize=(2 * 2 * num_cols, 2 * num_rows))
+    for i in range(num_images):
+        plt.subplot(num_rows, 2 * num_cols, 2 * i + 1)
+        plot_image(i, predictions[i], test_labels, test_images)
+        plt.subplot(num_rows, 2 * num_cols, 2 * i + 2)
+        plot_value_array(i, predictions[i], test_labels)
+    plt.tight_layout()
+    plt.show()
 
 
 def load_data(data_dir):
@@ -80,7 +139,7 @@ def load_data(data_dir):
 def display_pics(images, labels):
     plt.figure(figsize=(10, 10))
     for i in range(25):
-        plt.subplot(5, 5, i+1)
+        plt.subplot(5, 5, i + 1)
         plt.xticks([])
         plt.yticks([])
         plt.grid(False)
