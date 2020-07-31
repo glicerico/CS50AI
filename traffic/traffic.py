@@ -4,6 +4,7 @@ import os
 import sys
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import random as rand
 
 from sklearn.model_selection import train_test_split
 
@@ -72,19 +73,20 @@ def load_data(data_dir):
                 # Append label and image to lists
                 labels.append(int(directory))
                 images.append(img)
-    display_pics(images)
+    display_pics(images, labels)
     return images, labels
 
 
-def display_pics(train_images):
-    plt.figure(figsize=(10,10))
+def display_pics(images, labels):
+    plt.figure(figsize=(10, 10))
     for i in range(25):
-        plt.subplot(5,5,i+1)
+        plt.subplot(5, 5, i+1)
         plt.xticks([])
         plt.yticks([])
         plt.grid(False)
-        plt.imshow(train_images[i], cmap=plt.cm.binary)
-        plt.xlabel('nada')
+        img_id = rand.randint(0, len(images))
+        plt.imshow(images[img_id])
+        plt.xlabel(labels[img_id])
     plt.show()
 
 
