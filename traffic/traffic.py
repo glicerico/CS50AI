@@ -37,7 +37,7 @@ def main():
     model.evaluate(x_test, y_test, verbose=2)
 
     ## REMOVE!!
-    check_predictions(model, x_test, y_test)
+    # check_predictions(model, x_test, y_test)
 
     # Save model to file
     if len(sys.argv) == 3:
@@ -140,7 +140,7 @@ def get_model():
     num_conv = 1
     num_filters = [32]
     filter_dims = [(3, 3)]
-    dropout_rate = 0
+    dropout_rate = 0.5
     num_pooling = 1
     pool_dims = [(2, 2)]
     num_hidden = 1
@@ -165,8 +165,7 @@ def get_model():
     # Add hidden layers with dropout
     for i in range(num_hidden):
         model.add(tf.keras.layers.Dense(hidden_dims[i], activation="relu"))
-
-    model.add(tf.keras.layers.Dropout(dropout_rate))
+        model.add(tf.keras.layers.Dropout(dropout_rate))
 
     # Add an output layer with output units for all sign categories
     model.add(tf.keras.layers.Dense(NUM_CATEGORIES))
