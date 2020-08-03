@@ -137,14 +137,14 @@ def get_model():
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
-    num_conv = 1
-    num_filters = [32]
-    filter_dims = [(3, 3)]
-    dropout_rate = 0.5
+    num_conv = 3
+    num_filters = [16, 16, 16]
+    filter_dims = [(5, 5), (4, 4), (3, 3)]
+    dropout_rate = 0.10
     num_pooling = 1
     pool_dims = [(2, 2)]
     num_hidden = 1
-    hidden_dims = [128]
+    hidden_dims = [128, 128]
 
     model = tf.keras.models.Sequential()
 
