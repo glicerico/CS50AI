@@ -138,9 +138,9 @@ def get_model():
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
     num_conv = 3
-    num_filters = [16, 16, 16]
+    num_filters = [32, 32, 32]
     filter_dims = [(5, 5), (4, 4), (3, 3)]
-    dropout_rate = 0.10
+    dropout_rate = 0.1
     num_pooling = 1
     pool_dims = [(2, 2)]
     num_hidden = 1
