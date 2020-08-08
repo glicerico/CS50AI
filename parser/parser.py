@@ -17,12 +17,12 @@ V -> "smiled" | "tell" | "were"
 """
 
 NONTERMINALS = """
-S -> NP P | S ConjS
-P -> VP | Adv P | P Adv
-ConjS -> Conj S
+S -> NP Pred | S ConjP
+Pred -> VP | Adv Pred | Pred Adv
+ConjP -> Conj S | Conj VP
 AP -> Adj N | Adj AP
 NP -> N | AP | Det AP | Det N
-PP -> P NP
+PP -> P NP | PP PP
 VP -> V | V NP | V Adv | V PP | V NP PP
 """
 
