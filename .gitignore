@@ -139,3 +139,6 @@ degrees/large/
 
 # Screencasts
 *.ogv
+
+# Spreadsheet
+*ods
