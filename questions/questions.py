@@ -1,9 +1,11 @@
 import math
-import nltk
-from nltk import word_tokenize
 import os
 import string
 import sys
+
+import nltk
+from nltk import word_tokenize
+import numpy as np
 
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
@@ -115,7 +117,20 @@ def top_files(query, files, idfs, n):
     to their IDF values), return a list of the filenames of the the `n` top
     files that match the query, ranked according to tf-idf.
     """
-    raise NotImplementedError
+    # Calculate tf-idf values
+    tf_idfs = []
+    for vocab in files.values():
+        current_calc = []
+        for word in query:
+            occurrences = vocab.count(word)
+            current_calc.append(occurrences * idfs.get(word, 0))
+        tf_idfs.append(sum(current_calc))
+
+    indexes = np.argsort(tf_idfs)
+    indexes = indexes[::-1]
+    name_list = list(files.keys())  # Get file names
+    ordered_names = [name_list[index] for index in indexes]  # Sort filenames
+    return ordered_names[:n]  # Only return first n values
 
 
 def top_sentences(query, sentences, idfs, n):
