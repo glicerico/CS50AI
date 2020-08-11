@@ -141,7 +141,22 @@ def top_sentences(query, sentences, idfs, n):
     the query, ranked according to idf. If there are ties, preference should
     be given to sentences that have a higher query term density.
     """
-    raise NotImplementedError
+    # Calculate matching word measures and query term densities
+    value_list = []
+    for id, tokens in enumerate(sentences.values()):
+        mwm = 0
+        words_match = 0
+        for word in query:
+            if word in tokens:
+                mwm += idfs[word]
+                words_match += 1  # Track number of matched words
+        value_list.append((mwm, words_match, id))  # Use sort's tuple ordering to break ties
+
+    sorted_list = sorted(value_list)
+    sorted_list = sorted_list[::-1]
+    sentence_list = list(sentences.keys())  # Get sentences
+    ordered_sentences = [sentence_list[index[2]] for index in sorted_list]  # Sort sentences
+    return ordered_sentences[:n]  # Only return first n values
 
 
 if __name__ == "__main__":
