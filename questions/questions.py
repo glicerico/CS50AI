@@ -1,3 +1,4 @@
+import math
 import nltk
 from nltk import word_tokenize
 import os
@@ -87,7 +88,24 @@ def compute_idfs(documents):
     Any word that appears in at least one of the documents should be in the
     resulting dictionary.
     """
-    raise NotImplementedError
+    idfs = dict()
+
+    # Get unique vocabulary
+    unique = []
+    for vocab in documents.values():
+        unique.extend(set(vocab))
+    unique = set(unique)
+
+    # calculate idf's'
+    num_docs = len(documents)
+    for word in unique:
+        doc_count = 0
+        for vocab in documents.values():
+            if word in vocab:
+                doc_count += 1
+        idfs[word] = math.log(num_docs / doc_count)
+
+    return idfs
 
 
 def top_files(query, files, idfs, n):
