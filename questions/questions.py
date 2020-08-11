@@ -146,10 +146,11 @@ def top_sentences(query, sentences, idfs, n):
     for id, tokens in enumerate(sentences.values()):
         mwm = 0
         words_match = 0
+        sent_len = len(tokens)
         for word in query:
             if word in tokens:
                 mwm += idfs[word]
-                words_match += 1  # Track number of matched words
+                words_match += 1 / sent_len  # Track number of matched words
         value_list.append((mwm, words_match, id))  # Use sort's tuple ordering to break ties
 
     sorted_list = sorted(value_list)
