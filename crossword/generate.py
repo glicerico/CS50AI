@@ -149,15 +149,15 @@ class CrosswordCreator():
         if arcs is None:
             arcs = [(x, y) for x in self.crossword.variables for y in self.crossword.neighbors(x)]
 
-        queue = arcs
+        queue = arcs[:]  # Deep copy
 
         while len(queue) > 0:
             arc = queue.pop(0)
             if self.revise(*arc):  # Check if revision was made
                 if not self.domains[arc[0]]:  # Check if domain for modified var is empty
                     return False
-                # Add relevant arcs to queue if revision happened
-                queue.extend([this_arc for this_arc in arcs if (arc[0] in this_arc) and (this_arc != arc)])
+                # If revision happened, need to recheck all arcs for modified variable
+                queue.extend((arc[0], y) for y in self.crossword.neighbors(arc[0]) if (arc[0], y) not in queue)
 
         return True
 
