@@ -157,8 +157,7 @@ class CrosswordCreator():
                 if not self.domains[arc[0]]:  # Check if domain for modified var is empty
                     return False
                 # If revision happened, need to recheck all arcs for modified variable
-                queue.extend((arc[0], y) for y in self.crossword.neighbors(arc[0])
-                             if (arc[0], y) not in queue and y != arc[1])
+                queue.extend((arc[0], y) for y in self.crossword.neighbors(arc[0]) if (arc[0], y) not in queues)
 
         return True
 
