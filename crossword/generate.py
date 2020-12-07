@@ -1,3 +1,4 @@
+import copy
 import sys
 
 from crossword import *
@@ -99,23 +100,11 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
-        words_by_length = self.organize_words()
-        for var in self.domains.keys():
-            # Simply assign domains as all words with same length
-            self.domains[var] = words_by_length[var.length - 1]
-        return False
-
-    def organize_words(self):
-        """
-        Organize words by their length, to quickly enforce node consistency
-        """
-        max_size = max(self.crossword.width, self.crossword.height)
-        words_by_length = [[] for i in range(max_size)]  # Init array
-        for word in self.crossword.words:
-            if len(word) <= max_size:  # Ignore words longer than crossword size
-                words_by_length[len(word) - 1].append(word)
-
-        return words_by_length
+        for var, words in self.domains.items():
+            old_words = words.copy()
+            for word in old_words:
+                if var.length != len(word):
+                    self.domains[var].remove(word)
 
     def revise(self, x, y):
         """
@@ -126,15 +115,22 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
-        start_size = len(self.domains[x])
+        revision = False  # Indicates if x's domain was changed
         overlap = self.crossword.overlaps[x, y]
-        if overlap is not None:
-            # Get possible matching letters from word y's domain. This avoids nested loop.
-            matches = [word_y[overlap[1]] for word_y in self.domains[y]]
-            # Rewrite x's domain only with matching words.
-            self.domains[x] = [word_x for word_x in self.domains[x] if word_x[overlap[0]] in matches]
+        if overlap is None:  # If there's no overlap btw variables, consistency is assured
+            return False
+        old_words = self.domains[x].copy()
+        for word in old_words:
+            valid = False  # Indicates there's a consistent option for this word in y's domain
+            for word_y in self.domains[y]:
+                if word[overlap[0]] == word_y[overlap[1]]:
+                    valid = True
+                    break
+            if not valid:
+                self.domains[x].remove(word)
+                revision = True
 
-        return False if start_size == len(self.domains[x]) else True
+        return revision
 
     def ac3(self, arcs=None):
         """
@@ -145,20 +141,17 @@ class CrosswordCreator():
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
-        # Find all arcs for initial queue
+        # Find all arcs for initial queue.
         if arcs is None:
             arcs = [(x, y) for x in self.crossword.variables for y in self.crossword.neighbors(x)]
 
-        queue = arcs[:]  # Deep copy
-
-        while len(queue) > 0:
-            arc = queue.pop(0)
-            if self.revise(*arc):  # Check if revision was made
-                if not self.domains[arc[0]]:  # Check if domain for modified var is empty
+        while len(arcs) > 0:
+            arc = arcs.pop(0)  # First in, first out
+            if self.revise(*arc):  # If x's domain was modified during arc consistency check...
+                if len(self.domains[arc[0]]) == 0:  # If domain is empty
                     return False
-                # If revision happened, need to recheck all arcs for modified variable
-                queue.extend((arc[0], y) for y in self.crossword.neighbors(arc[0])
-                             if (arc[0], y) not in queue and arc[1] != y)
+                new_arcs = [(arc[0], y) for y in self.crossword.neighbors(arc[0]) if y != arc[1]]
+                arcs.extend(new_arcs)  # ... need to re-check all of x's arcs
 
         return True
 
@@ -223,16 +216,13 @@ class CrosswordCreator():
         return values.
         """
         remaining = set(self.crossword.variables) - set(assignment.keys())
-        min_remaining_count = min(self.get_domain_length(var) for var in remaining)  # Get smallest domain size
+        min_remaining_count = min(len(self.domains[var]) for var in remaining)  # Get smallest domain size
         # Only keep vars with smallest domain size
-        ordered_remaining = [var for var in remaining if self.get_domain_length(var) == min_remaining_count]
+        ordered_remaining = [var for var in remaining if len(self.domains[var]) == min_remaining_count]
         if len(ordered_remaining) > 1:  # If tied, sort by degree
             ordered_remaining = sorted(ordered_remaining, key=lambda x: len(self.crossword.neighbors(x)))
 
         return ordered_remaining[-1]  # Return highest degree
-
-    def get_domain_length(self, x):
-        return len(self.domains[x])
 
     def backtrack(self, assignment):
         """
