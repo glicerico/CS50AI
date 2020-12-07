@@ -150,8 +150,8 @@ class CrosswordCreator():
             if self.revise(*arc):  # If x's domain was modified during arc consistency check...
                 if len(self.domains[arc[0]]) == 0:  # If domain is empty
                     return False
-                arcs.append(self.crossword.neighbors(arc[0]))  # ... need to re-check all of x's arcs
-                arcs.remove(arc)  # Remove arc currently being checked
+                new_arcs = [(arc[0], y) for y in self.crossword.neighbors(arc[0]) if y != arc[1]]
+                arcs.extend(new_arcs)  # ... need to re-check all of x's arcs
 
         return True
 
